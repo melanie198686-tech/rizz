@@ -11,18 +11,6 @@ local Window = Rayfield:CreateWindow({
    }
 })
 
--- Notification function
-local function Notify(title, text, duration)
-	game.StarterGui:SetCore("SendNotification", {
-		Title = title;
-		Text = text;
-		Duration = duration;
-	})
-end
-
--- Example notification
-Notify("Key", "Join the discord for key discord.gg/Yu3WByND", 5)
-
 -- Tab
 local RizzTab = Window:CreateTab("Rizz", 4483362458)
 
