@@ -30,6 +30,18 @@ stroke.Parent = frame
 stroke.Color = Color3.fromRGB(255, 215, 0)
 stroke.Thickness = 4
 
+-- Notification function
+local function Notify(title, text, duration)
+	game.StarterGui:SetCore("SendNotification", {
+		Title = title;
+		Text = text;
+		Duration = duration;
+	})
+end
+
+-- Example notification
+Notify("Script", "Join discord to get key : .gg/Yu3WByND!", 5)
+
 -- Tween for pulsating glow
 local tweenInfo = TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
 local glowTween = TweenService:Create(stroke, tweenInfo, {Transparency = 0.5})
