@@ -1,0 +1,75 @@
+-- Made by larry & notpaki join discord for more
+-- Made by larry & notpaki join discord for more
+-- Made by larry & notpaki join discord for more
+-- Made by larry & notpaki join discord for more
+
+-- Player
+local player = game.Players.LocalPlayer
+
+-- Create GUI
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = game.CoreGui
+
+local Button = Instance.new("TextButton")
+Button.Parent = ScreenGui
+Button.Size = UDim2.new(0,120,0,50)
+Button.Position = UDim2.new(0.5,-60,0.5,-25)
+Button.BackgroundColor3 = Color3.fromRGB(30,30,30)
+Button.TextColor3 = Color3.fromRGB(255,255,255)
+Button.Text = "OFF"
+Button.TextSize = 20
+Button.Active = true
+Button.Draggable = true
+
+-- Character setup
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+local root = character:WaitForChild("HumanoidRootPart")
+
+-- Settings
+local godEnabled = false
+local lastHealth = humanoid.Health
+local teleportDistance = 25
+
+-- Teleport function
+local function teleportBack()
+	if root then
+		root.CFrame = root.CFrame * CFrame.new(0,0,teleportDistance)
+	end
+end
+
+-- Damage detection
+humanoid.HealthChanged:Connect(function(newHealth)
+	if godEnabled and newHealth < lastHealth then
+		teleportBack()
+	end
+	lastHealth = newHealth
+end)
+
+-- Toggle button
+Button.MouseButton1Click:Connect(function()
+	godEnabled = not godEnabled
+	
+	if godEnabled then
+		Button.Text = "ON"
+		Button.BackgroundColor3 = Color3.fromRGB(0,170,0)
+	else
+		Button.Text = "OFF"
+		Button.BackgroundColor3 = Color3.fromRGB(30,30,30)
+	end
+end)
+
+-- Respawn fix
+player.CharacterAdded:Connect(function(newChar)
+	character = newChar
+	humanoid = character:WaitForChild("Humanoid")
+	root = character:WaitForChild("HumanoidRootPart")
+	lastHealth = humanoid.Health
+
+	humanoid.HealthChanged:Connect(function(newHealth)
+		if godEnabled and newHealth < lastHealth then
+			teleportBack()
+		end
+		lastHealth = newHealth
+	end)
+end)
