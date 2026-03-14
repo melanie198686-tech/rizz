@@ -1,0 +1,156 @@
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local VIM = game:GetService("VirtualInputManager")
+local Player = Players.LocalPlayer
+
+-- Dash settings
+local LethalDash = false
+local Cooldown = false
+local DashDistance = 26
+local TeleportDelay = 2.4
+local AbilityCooldown = 4
+local DelayBeforeThree = 0.1
+
+-- GUI
+local playerGui = Player:WaitForChild("PlayerGui")
+
+-- Startup overlay
+local overlay = Instance.new("ScreenGui")
+overlay.Name = "StartupOverlay"
+overlay.Parent = playerGui
+
+local bg = Instance.new("Frame")
+bg.Size = UDim2.new(1, 0, 1, 0)
+bg.BackgroundColor3 = Color3.fromRGB(0,0,0)
+bg.BackgroundTransparency = 0.5 -- darker black
+bg.Parent = overlay
+
+local credit = Instance.new("TextLabel")
+credit.Size = UDim2.new(0, 500, 0, 100)
+credit.Position = UDim2.new(0.5, -250, 0.35, -50)
+credit.BackgroundTransparency = 1
+credit.Text = "This combo script was made by Larry & Notpaki"
+credit.TextColor3 = Color3.fromRGB(255, 255, 255)
+credit.Font = Enum.Font.GothamBold
+credit.TextScaled = true
+credit.Parent = overlay
+
+-- Start button
+local startButton = Instance.new("TextButton")
+startButton.Size = UDim2.new(0, 150, 0, 50)
+startButton.Position = UDim2.new(0.5, -170, 0.6, -25)
+startButton.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+startButton.Text = "Start"
+startButton.Font = Enum.Font.GothamBold
+startButton.TextScaled = true
+startButton.TextColor3 = Color3.fromRGB(255,255,255)
+startButton.Parent = overlay
+
+local startUICorner = Instance.new("UICorner")
+startUICorner.CornerRadius = UDim.new(0, 15)
+startUICorner.Parent = startButton
+
+-- Discord button
+local discordButton = Instance.new("TextButton")
+discordButton.Size = UDim2.new(0, 150, 0, 50)
+discordButton.Position = UDim2.new(0.5, 20, 0.6, -25)
+discordButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255) -- blue
+discordButton.Text = "Discord"
+discordButton.Font = Enum.Font.GothamBold
+discordButton.TextScaled = true
+discordButton.TextColor3 = Color3.fromRGB(255,255,255)
+discordButton.Parent = overlay
+
+local discordUICorner = Instance.new("UICorner")
+discordUICorner.CornerRadius = UDim.new(0, 15)
+discordUICorner.Parent = discordButton
+
+-- Start button behavior
+startButton.MouseButton1Click:Connect(function()
+    overlay:Destroy()
+end)
+
+-- Discord button behavior
+discordButton.MouseButton1Click:Connect(function()
+    if setclipboard then
+        setclipboard("https://discord.gg/htZaGYgr")
+    else
+        warn("Clipboard function not available.")
+    end
+end)
+
+-- Modern draggable toggle button
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ModernToggleButton"
+screenGui.Parent = playerGui
+
+local button = Instance.new("Frame")
+button.Name = "ToggleButton"
+button.Size = UDim2.new(0, 120, 0, 50)
+button.Position = UDim2.new(0.5, -60, 0.5, -25)
+button.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+button.BorderSizePixel = 0
+button.AnchorPoint = Vector2.new(0.5, 0.5)
+button.Parent = screenGui
+button.Active = true
+button.Draggable = true
+
+local uicornerBtn = Instance.new("UICorner")
+uicornerBtn.CornerRadius = UDim.new(0, 15)
+uicornerBtn.Parent = button
+
+local label = Instance.new("TextLabel")
+label.Size = UDim2.new(1, 0, 1, 0)
+label.BackgroundTransparency = 1
+label.Text = "OFF"
+label.TextColor3 = Color3.fromRGB(255, 255, 255)
+label.Font = Enum.Font.GothamBold
+label.TextScaled = true
+label.Parent = button
+
+local isOn = false
+
+local function toggle()
+    isOn = not isOn
+    LethalDash = isOn
+    if isOn then
+        button.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+        label.Text = "ON"
+    else
+        button.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        label.Text = "OFF"
+    end
+end
+
+button.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        toggle()
+    end
+end)
+
+-- Lethal Dash key detection
+UIS.InputBegan:Connect(function(input, gp)
+    if gp then return end
+    if not LethalDash then return end
+    if Cooldown then return end
+
+    if input.KeyCode == Enum.KeyCode.One then
+        local char = Player.Character
+        if not char then return end
+
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if not hrp then return end
+
+        Cooldown = true
+        task.wait(TeleportDelay)
+        hrp.CFrame = hrp.CFrame + hrp.CFrame.LookVector * DashDistance
+
+        task.delay(DelayBeforeThree, function()
+            VIM:SendKeyEvent(true, Enum.KeyCode.Three, false, game)
+            VIM:SendKeyEvent(false, Enum.KeyCode.Three, false, game)
+        end)
+
+        task.wait(AbilityCooldown)
+        Cooldown = false
+    end
+end)
